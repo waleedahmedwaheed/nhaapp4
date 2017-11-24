@@ -26,231 +26,98 @@
     <link href="styles/font-awesome.css" rel="stylesheet" type="text/css">
     <link href="styles/animate.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="scripts/jquery-3.2.0.min.js"></script>
-    
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSGxeoxPCu0YEVtK8XCbdmfiYAfPtUFwE&libraries=places" async defer></script> 
-	<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
-	
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSGxeoxPCu0YEVtK8XCbdmfiYAfPtUFwE&v=3.exp"></script>
+
     <script type="text/javascript" src="scripts/jquery.js"></script>
     <script type="text/javascript" src="scripts/jqueryui.js"></script>
     <script type="text/javascript" src="scripts/framework-plugins.js"></script>
     <script type="text/javascript" src="scripts/custom.js"></script>
-     <script type="text/javascript">
-	 
-	 if(navigator.onLine) 
-		{
-		
-		$(function() {
-			$("#map").height(330);
-		});
-		$(function() {
-			$("#off,#offimage").height(0);
-		});
-		
-var temp_lat = '';
-var temp_lng = '';
-var map;
-var infowindow;
-getLocation();
+    <script type="text/javascript">
+        function initialize() {
 
-var interval=1*1000;
+            if (!!navigator.geolocation) {
 
-setInterval(function()
-{
- 
-		if(navigator.onLine) 
-		{
-		
-		$(function() {
-			$("#map").height(330);
-		});
-		$(function() {
-			$("#off,#offimage").height(0);
-		});
-		}
-		else
-		{
-			$(function() {
-			$("#off,#offimage").height(200);
-			});
-			$(function() {
-				$("#map").height(0);
-			});
-		}
+                var map;
 
-//getLocation();
-//initMap();
+                var mapOptions = {
+                    zoom: 15,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
 
+                map = new google.maps.Map(document.getElementById('google_canvas'), mapOptions);
+				
+				
 
-},1000);
+                navigator.geolocation.getCurrentPosition(function(position) {
 
-	
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-    } else {
-        temp_lat = 0.0; //set default lat value
-        temp_lng = 0.0; //set default lng value
-    }
-}
+                    var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-/* function initialize() {
-setTimeout(function(){
+                    var cur_latitude = position.coords.latitude;
+                    var cur_longitude = position.coords.longitude;
+					
+					infowindow = new google.maps.InfoWindow();
+					var service = new google.maps.places.PlacesService(map);
+					service.nearbySearch({
+					  location: geolocate,
+					  radius: 2000,
+					  type: ['store']
+					}, callback);
+					
+                    //alert(position.coords.latitude);
+                    //alert(position.coords.longitude);
 
-  initMap();// pass new lat long(position) here.
-},interval);
-}
+                    //var lon = document.getElementById('lon').value = cur_longitude;
+                    //var lat = document.getElementById('lat').value = cur_latitude;
+                    //alert(cur_longitude);
 
-function updateMarkerPosition(){
-navigator.geolocation.getCurrentPosition(showPosition);
-setTimeout(function(){
-updateMarkerPosition();// pass new lat long(position) here.
-},interval);
-}*/
+                    var infowindow = new google.maps.InfoWindow({
+                        //pixelOffset: new google.maps.Size(200,0),
+                        map: map,
+                        position: geolocate,
+                        center: geolocate,
+                        content: '<h4>Your Current Location</h4>'
+                    });
 
-setInterval(function()
-{
- 
-//getLocation();
-//initMap();
+                    var marker = new google.maps.Marker({
+                        position: geolocate,
+                        center: geolocate,
+                        map: map,
+                        title: 'Latitude: ' + position.coords.latitude + '' +
+                            'Longitude: ' + position.coords.longitude + ''
+                    });
 
+                    map.setCenter(geolocate);
 
-},2000);
+                });
 
-function showPosition(position) {
-    temp_lat = position.coords.latitude;
-    temp_lng = position.coords.longitude;
-    initMap();
-}
+            } else {
+                document.getElementById('google_canvas').innerHTML = 'No Geolocation Support.';
+            }
 
-
-function initMap() {
-    var pyrmont = {
-        lat: temp_lat,
-        lng: temp_lng
-    };
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: pyrmont,
-        zoom: 8,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
-    /*infowindow = new google.maps.InfoWindow();
-    var service = new google.maps.places.PlacesService(map);
-    service.nearbySearch({
-            location: pyrmont,
-            radius: 2000,
-            type: ['school']
-        },
-        callback);*/
-	
-	setMarkers(map);	
-		 
-							
-}
-
- //  center: {lat: 31.1704063, lng: 72.7097161}
-
- 
- <!-- current loc -->
- 
-var beaches = [
-		 ['EVENT', 33.5861594, 72.8731103],
-		 ['EVENT', 37.370375, -97.756138]
-						];
-						
-						
-
-function setMarkers(map) {
-  // Adds markers to the map.
-
-  // Marker sizes are expressed as a Size of X,Y where the origin of the image
-  // (0,0) is located in the top left of the image.
-
-  // Origins, anchor positions and coordinates of the marker increase in the X
-  // direction to the right and in the Y direction down.
-  var image = {
-    //url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-    url: 'https://www.trend-bags.com/oie_transparent.png',
-    //url: 'images/logo-dark2.png', 
-    // This marker is 20 pixels wide by 32 pixels high.
-    size: new google.maps.Size(40, 32),
-    // The origin for this image is (0, 0).
-    origin: new google.maps.Point(0, 0),
-    // The anchor for this image is the base of the flagpole at (0, 32).
-    anchor: new google.maps.Point(0, 32)
-  };
-  // Shapes define the clickable region of the icon. The type defines an HTML
-  // <area> element 'poly' which traces out a polygon as a series of X,Y points.
-  // The final coordinate closes the poly by connecting to the first coordinate.
-  var shape = {
-    coords: [1, 1, 1, 20, 18, 20, 18, 1],
-    type: 'poly'
-  };
-  for (var i = 0; i < beaches.length; i++) {
-    var beach = beaches[i];
-    var marker = new google.maps.Marker({
-      position: {lat: beach[1], lng: beach[2]},
-      map: map,
-      icon: image,
-      shape: shape,
-      title: beach[0],
-      //zIndex: beach[3],
-      url: beach[3]
-    });
-	
-	 google.maps.event.addListener(marker, 'click', (function(marker, i) {
-   return function() {
-    // infowindow.setContent(beach[0]);
-     //infowindow.open(map, marker);
-	 window.open(this.url,'_blank');
-     //window.location.href = this.url;
-   }
- })(marker, i));
- 
-  }
-}						
-
-/* function callback(results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-        for (var i = 0; i < results.length; i++) {
-            createMarker(results[i]);
         }
-    }
-} */
+				
+				  function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
 
-/*
-function createMarker(place) {
-    var placeLoc = place.geometry.location;
-    var marker = new google.maps.Marker({
-        map: map,
-        position: place.geometry.location
-    });
-    google.maps.event.addListener(marker, 'click', function() {
-        infowindow.setContent(place.name);
-        infowindow.open(map, this);
-    });
-}
-//alert("true");*/
-	
-	 
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
 
-		}
-		else
-		{
-			//alert("false");
-			//window.location="error.html";
-			//document.getElementById("demo").innerHTML = "Paragraph changed!";
-			//document.getElementById('map').style.display = 'none';
-			//document.getElementById('map').style.height = "10px"
-			//document.getElementsByClassName('container-fullscreen')[0].style.display = "none"
-			
-			$(function() {
-			$("#off,#offimage").height(200);
-			});
-			$(function() {
-				$("#map").height(0);
-			});
-		
-		}
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(place.name);
+          infowindow.open(map, this);
+        });
+      }
+	  
+        google.maps.event.addDomListener(window, "load", initialize);
     </script>
 
     <script type="text/javascript">
@@ -411,17 +278,12 @@ Your message is important to us and we reply to all of them in less than 48 hour
 			<div id="content" class="snap-content">
                 <div class="content">
                     <div class="header-clear"></div>
-					
-					
-					
-                    <div class="container-fullscreen"> 
-						<div id="map" > </div>
-						<div id="off" > <img src="images/offline.png" alt="Unable to connect to the Google Map" id="offimage" /> </div>
-					</div>
+
+                    <div class="container-fullscreen" id="google_canvas" style="height:200px;"> </div>
 
                     <div class="one-half-responsive">
                         <h4>Send us an email!</h4>
-                        <p>Use the form to send us a message, it's easy to use!</p>
+                        <p>Use the form to send us a message, it's AJAX and PHP powered and it's easy to use!</p>
                         <div class="container no-bottom">
                             <div class="contact-form no-bottom">
                                 <div class="formSuccessMessageWrap" style="display:none;" id="formSuccessMessageWrap">

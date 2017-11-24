@@ -191,7 +191,7 @@
 
 .sidebar-header-left a img {
     width: 120px;
-    margin-top: 22px;
+    margin-top: 6px;
     margin-left: 30px;
 }
 
@@ -227,7 +227,7 @@
 
 .sidebar-header-right a img {
     width: 120px;
-    margin-top: 22px;
+    margin-top: 6px;
 }
 
 .sidebar-header-right a:first-child {
