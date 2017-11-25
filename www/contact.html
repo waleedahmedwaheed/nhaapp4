@@ -36,15 +36,10 @@
     <script type="text/javascript" src="scripts/custom.js"></script>
      <script type="text/javascript">
 	 
-	 if(navigator.onLine) 
-		{
+	// if(navigator.onLine) 
+		//{
 		
-		$(function() {
-			$("#map").height(330);
-		});
-		$(function() {
-			$("#off,#offimage").height(0);
-		});
+		
 		
 var temp_lat = '';
 var temp_lng = '';
@@ -56,41 +51,85 @@ var interval=1*1000;
 
 setInterval(function()
 {
- 
-		if(navigator.onLine) 
-		{
-		
-		$(function() {
-			$("#map").height(330);
-		});
-		$(function() {
-			$("#off,#offimage").height(0);
-		});
-		}
-		else
-		{
-			$(function() {
-			$("#off,#offimage").height(200);
-			});
-			$(function() {
-				$("#map").height(0);
-			});
-		}
 
-//getLocation();
+getLocation();
 //initMap();
 
+//console.log(showError);
 
-},1000);
 
+},4000);
 	
 function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
+        navigator.geolocation.getCurrentPosition(showPosition,showError);	
     } else {
-        temp_lat = 0.0; //set default lat value
+		// x.innerHTML = "Geolocation is not supported by this browser.";
+        $("#off").html("Geolocation is not supported by this browser.");
+	  $(function() {
+			$("#off,#offimage").height(100);
+		});
+		$(function() {
+			$("#map").height(0);
+		});
+		temp_lat = 0.0; //set default lat value
         temp_lng = 0.0; //set default lng value
     }
+}
+
+
+function showError(error) {
+	
+		//errorupdate();
+	
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      //$("#off").innerHTML = "User denied the request for Geolocation.";
+	  $("#off").html("User denied the request for Geolocation.");
+	  $(function() {
+			$("#off,#offimage").height(100);
+			document.getElementById("off").style.display = "";
+		});
+		$(function() {
+			$("#map").height(0);
+		});
+      break;
+    case error.POSITION_UNAVAILABLE:
+      //x.innerHTML = "Location information is unavailable."
+	 
+	  $("#off").html("Location information is unavailable.");
+	  $(function() {
+			$("#off,#offimage").height(100);
+			document.getElementById("off").style.display = "";
+		});
+		$(function() {
+			$("#map").height(0);
+		});
+	   
+      break;
+    case error.TIMEOUT:
+     // x.innerHTML = "The request to get user location timed out."
+      $("#off").html("The request to get user location timed out.");
+	  $(function() {
+			$("#off,#offimage").height(100);
+			document.getElementById("off").style.display = "";
+		});
+		$(function() {
+			$("#map").height(0);
+		});
+	  break;
+    case error.UNKNOWN_ERROR:
+      //x.innerHTML = "An unknown error occurred."
+       $("#off").html("An unknown error occurred.");
+	  $(function() {
+			$("#off,#offimage").height(100);
+			document.getElementById("off").style.display = "";
+		});
+		$(function() {
+			$("#map").height(0);
+		});
+	  break;
+  }
 }
 
 /* function initialize() {
@@ -107,19 +146,28 @@ updateMarkerPosition();// pass new lat long(position) here.
 },interval);
 }*/
 
-setInterval(function()
+/*setInterval(function()
 {
  
 //getLocation();
 //initMap();
 
 
-},2000);
+},2000);*/
+
+function showupdate()
+{
+	$("#off,#offimage").hide();
+	$("#map").height(330);
+}
 
 function showPosition(position) {
+					
     temp_lat = position.coords.latitude;
     temp_lng = position.coords.longitude;
-    initMap();
+    showupdate();	
+    initMap();	
+	
 }
 
 
@@ -133,6 +181,11 @@ function initMap() {
         zoom: 8,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
+		
+		//console.log(pyrmont);
+		
+
+	
     /*infowindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
     service.nearbySearch({
@@ -194,7 +247,7 @@ function setMarkers(map) {
       shape: shape,
       title: beach[0],
       //zIndex: beach[3],
-      url: beach[3]
+      //url: beach[3]
     });
 	
 	 google.maps.event.addListener(marker, 'click', (function(marker, i) {
@@ -233,7 +286,7 @@ function createMarker(place) {
 	
 	 
 
-		}
+		/*}
 		else
 		{
 			//alert("false");
@@ -250,17 +303,21 @@ function createMarker(place) {
 				$("#map").height(0);
 			});
 		
-		}
+		}*/
     </script>
 
-    <script type="text/javascript">
-        $(document).ready(function(e) {
-
-            //	 $( "#google_canvas" ).show();
-            //initialize();
-            // alert("asdas");
-        });
-    </script>
+	<style>
+	#off
+	{
+		width: 50%;
+		margin: 0 auto;
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	</style>
+	
 </head>
 
 <body class="dual-sidebar">
@@ -299,7 +356,7 @@ function createMarker(place) {
                         <em>Contact</em>
                         <i class="fa fa-circle"></i>
                     </a>
-                    <a class="menu-item" href="#">
+                    <a class="menu-item" href="push.html">
                         <i class="fa fa-map-marker"></i>
                         <em>Map</em>
                         <i class="fa fa-circle"></i>
@@ -412,11 +469,11 @@ Your message is important to us and we reply to all of them in less than 48 hour
                 <div class="content">
                     <div class="header-clear"></div>
 					
-					
+<!--					<img src="images/offline.png" alt="Unable to connect to the Google Map" id="offimage" /> -->
 					
                     <div class="container-fullscreen"> 
-						<div id="map" > </div>
-						<div id="off" > <img src="images/offline.png" alt="Unable to connect to the Google Map" id="offimage" /> </div>
+						<div id="map" style="height:330px;"> </div>
+						<div> <h4 id="off"> </h4> </div>
 					</div>
 
                     <div class="one-half-responsive">
