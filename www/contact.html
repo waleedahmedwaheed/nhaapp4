@@ -49,6 +49,11 @@ getLocation();
 
 var interval=1*1000;
 
+$( document ).ready(function() {
+    getLocation();
+	alert("OK");
+});
+
 setInterval(function()
 {
 
@@ -356,7 +361,7 @@ function createMarker(place) {
                         <em>Contact</em>
                         <i class="fa fa-circle"></i>
                     </a>
-                    <a class="menu-item" href="push.html">
+                    <a class="menu-item" href="#">
                         <i class="fa fa-map-marker"></i>
                         <em>Map</em>
                         <i class="fa fa-circle"></i>
